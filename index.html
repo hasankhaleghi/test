@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -245,7 +246,7 @@
         position: relative;
         isolation: isolate;
         display: block;
-        width: clamp(160px, 17vw, 198px);
+        width: clamp(190px, 19vw, 240px);
         aspect-ratio: 1;
         grid-column: 2;
         grid-row: 1;
@@ -270,10 +271,10 @@
       .electron-shells {
         position: absolute;
         z-index: 0;
-        top: 38%;
-        left: 9%;
-        width: 82%;
-        height: 58%;
+        top: 16%;
+        left: 4%;
+        width: 92%;
+        height: 72%;
         overflow: visible;
         pointer-events: none;
       }
@@ -322,7 +323,7 @@
 
       .element-detail-symbol {
         z-index: 10;
-        top: 30%;
+        top: 10%;
         left: 50%;
         max-width: calc(100% - 32px);
         transform: translate(-50%, -50%);
@@ -338,7 +339,7 @@
         position: absolute;
         z-index: 2;
         right: 8px;
-        bottom: 30px;
+        bottom: 25px;
         left: 8px;
         overflow: hidden;
         font-size: 18px;
@@ -507,7 +508,7 @@
         }
 
         .element-detail {
-          width: 160px;
+          width: 184px;
           min-width: 0;
         }
 
@@ -844,7 +845,7 @@ Og|Oganesson`
 
         const center = 60;
         shellCounts.forEach((electronCount, shellIndex) => {
-          const radius = 7 + shellIndex * 5.1;
+          const radius = (48 * (shellIndex + 1)) / shellCounts.length;
           const orbit = document.createElementNS(svgNamespace, "circle");
           orbit.setAttribute("cx", center);
           orbit.setAttribute("cy", center);
