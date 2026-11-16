@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A responsive liquid-glass navigation menu demo."
+    />
+    <title>Liquid Glass Menu</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        color: #fff;
+        background:
+          radial-gradient(ellipse at 18% 24%, #ffb38b 0, transparent 30%),
+          radial-gradient(ellipse at 82% 18%, #8a83ff 0, transparent 34%),
+          radial-gradient(ellipse at 70% 82%, #ee78b5 0, transparent 35%),
+          linear-gradient(135deg, #24284d 0%, #55547d 48%, #2f385c 100%);
+      }
+
+      body::before,
+      body::after {
+        position: fixed;
+        z-index: -1;
+        width: 52vw;
+        height: 52vw;
+        border: 1px solid rgb(255 255 255 / 13%);
+        border-radius: 46% 54% 60% 40% / 43% 38% 62% 57%;
+        content: "";
+        filter: blur(1px);
+        pointer-events: none;
+      }
+
+      body::before {
+        top: 28%;
+        left: -12%;
+        transform: rotate(28deg);
+      }
+
+      body::after {
+        right: -17%;
+        bottom: -34%;
+        width: 68vw;
+        height: 68vw;
+        transform: rotate(-24deg);
+      }
+
+      .page {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+        padding: 28px clamp(20px, 6vw, 88px) 32px;
+      }
+
+      .glass-nav {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        width: min(100%, 1120px);
+        min-height: 72px;
+        align-items: center;
+        justify-content: space-between;
+        align-self: center;
+        padding: 10px 14px 10px 22px;
+        border: 1px solid rgb(255 255 255 / 27%);
+        border-radius: 999px;
+        background:
+          linear-gradient(135deg, rgb(255 255 255 / 20%), rgb(255 255 255 / 5%)),
+          rgb(255 255 255 / 9%);
+        box-shadow:
+          0 18px 50px rgb(15 18 42 / 20%),
+          inset 0 1px 1px rgb(255 255 255 / 35%),
+          inset 0 -1px 1px rgb(255 255 255 / 8%);
+        backdrop-filter: blur(24px) saturate(155%);
+        -webkit-backdrop-filter: blur(24px) saturate(155%);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: inherit;
+        font-size: 15px;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid rgb(255 255 255 / 35%);
+        border-radius: 50%;
+        background: linear-gradient(145deg, #fff8, #fff2 70%);
+        box-shadow: inset 0 1px 2px #fff8;
+      }
+
+      .brand-mark svg {
+        width: 19px;
+        height: 19px;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .nav-links a {
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        padding: 0 17px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        color: rgb(255 255 255 / 78%);
+        font-size: 13px;
+        font-weight: 520;
+        text-decoration: none;
+        transition:
+          background 180ms ease,
+          border-color 180ms ease,
+          color 180ms ease,
+          transform 180ms ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a:focus-visible {
+        border-color: rgb(255 255 255 / 20%);
+        outline: none;
+        background: rgb(255 255 255 / 12%);
+        color: #fff;
+        transform: translateY(-1px);
+      }
+
+      .nav-links a[aria-current="page"] {
+        border-color: rgb(255 255 255 / 22%);
+        background: rgb(255 255 255 / 16%);
+        color: #fff;
+      }
+
+      .nav-cta {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 20px;
+        border: 1px solid rgb(255 255 255 / 50%);
+        border-radius: 999px;
+        background: linear-gradient(135deg, #fff, #eee9ff);
+        box-shadow: 0 4px 16px rgb(18 18 44 / 16%);
+        color: #34304e;
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+        transition:
+          box-shadow 180ms ease,
+          transform 180ms ease;
+      }
+
+      .nav-cta:hover,
+      .nav-cta:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 3px;
+        box-shadow: 0 7px 22px rgb(18 18 44 / 24%);
+        transform: translateY(-1px);
+      }
+
+      .menu-toggle {
+        display: none;
+        width: 44px;
+        height: 44px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgb(255 255 255 / 24%);
+        border-radius: 50%;
+        background: rgb(255 255 255 / 12%);
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .menu-toggle svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      main {
+        display: grid;
+        flex: 1;
+        align-content: center;
+        justify-items: center;
+        padding: 72px 0 94px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 24px;
+        color: rgb(255 255 255 / 78%);
+        font-size: 11px;
+        font-weight: 650;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #d7ffe9;
+        box-shadow: 0 0 12px #d7ffe9;
+        content: "";
+      }
+
+      h1 {
+        max-width: 850px;
+        margin: 0;
+        font-size: clamp(54px, 10vw, 112px);
+        font-weight: 580;
+        letter-spacing: -0.085em;
+        line-height: 0.98;
+      }
+
+      h1 span {
+        color: transparent;
+        background: linear-gradient(100deg, #fff 10%, #f6d8ff 55%, #c9d4ff);
+        background-clip: text;
+        -webkit-background-clip: text;
+      }
+
+      .intro {
+        max-width: 440px;
+        margin: 25px 0 0;
+        color: rgb(255 255 255 / 75%);
+        font-size: clamp(15px, 2vw, 17px);
+        line-height: 1.7;
+      }
+
+      .destinations {
+        display: grid;
+        width: min(100%, 1120px);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        align-self: center;
+        padding-bottom: 36px;
+      }
+
+      .destination {
+        min-height: 150px;
+        padding: 22px;
+        scroll-margin-top: 24px;
+        border: 1px solid rgb(255 255 255 / 19%);
+        border-radius: 22px;
+        background: rgb(255 255 255 / 8%);
+        box-shadow: inset 0 1px 1px rgb(255 255 255 / 12%);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .destination p {
+        margin: 0 0 22px;
+        color: rgb(255 255 255 / 62%);
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .destination h2 {
+        margin: 0 0 8px;
+        font-size: 17px;
+        font-weight: 580;
+        letter-spacing: -0.035em;
+      }
+
+      .destination span {
+        color: rgb(255 255 255 / 67%);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .hint {
+        align-self: center;
+        color: rgb(255 255 255 / 56%);
+        font-size: 12px;
+        letter-spacing: 0.02em;
+      }
+
+      @media (max-width: 900px) {
+        .destinations {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 700px) {
+        .page {
+          padding: 18px 16px 24px;
+        }
+
+        .glass-nav {
+          min-height: 64px;
+          padding: 9px 10px 9px 17px;
+        }
+
+        .menu-toggle {
+          display: inline-flex;
+        }
+
+        .nav-links {
+          position: absolute;
+          top: calc(100% + 10px);
+          right: 0;
+          left: 0;
+          display: none;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 4px;
+          padding: 10px;
+          border: 1px solid rgb(255 255 255 / 25%);
+          border-radius: 24px;
+          background: rgb(49 48 78 / 66%);
+          box-shadow: 0 18px 50px rgb(15 18 42 / 22%);
+          backdrop-filter: blur(24px) saturate(155%);
+          -webkit-backdrop-filter: blur(24px) saturate(155%);
+        }
+
+        .nav-links[data-open="true"] {
+          display: flex;
+        }
+
+        .nav-links a {
+          min-height: 46px;
+        }
+
+        .nav-cta {
+          margin-top: 4px;
+        }
+
+        main {
+          padding: 64px 0 76px;
+        }
+
+        .destinations {
+          gap: 9px;
+          padding-bottom: 28px;
+        }
+
+        .destination {
+          min-height: 140px;
+          padding: 17px;
+        }
+      }
+
+      @media (max-width: 400px) {
+        .destinations {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <nav class="glass-nav" aria-label="Main navigation">
+          <a class="brand" href="#home" aria-label="Luma home">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 2.8 14.6 9.4 21.2 12l-6.6 2.6L12 21.2l-2.6-6.6L2.8 12l6.6-2.6L12 2.8Z"
+                  stroke="currentColor"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                />
+              </svg>
+            </span>
+            Luma
+          </a>
+
+          <button
+            class="menu-toggle"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-controls="nav-links"
+            aria-expanded="false"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M4 7h16M4 12h16M4 17h16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-width="1.7"
+              />
+            </svg>
+          </button>
+
+          <ul class="nav-links" id="nav-links" data-open="false">
+            <li><a href="#home" aria-current="page">Home</a></li>
+            <li><a href="#discover">Discover</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#about">About</a></li>
+          </ul>
+
+          <a class="nav-cta" href="#get-started">Get started</a>
+        </nav>
+      </header>
+
+      <main id="home">
+        <p class="eyebrow">A softer kind of interface</p>
+        <h1>Make room<br />for <span>wonder.</span></h1>
+        <p class="intro">
+          A little light, a little blur, and a menu that feels like it belongs
+          in the world around it.
+        </p>
+      </main>
+
+      <section class="destinations" aria-label="Explore Luma">
+        <article class="destination" id="discover">
+          <p>01 / Discover</p>
+          <h2>Find your next thing</h2>
+          <span>Fresh ideas, made easy to explore.</span>
+        </article>
+        <article class="destination" id="gallery">
+          <p>02 / Gallery</p>
+          <h2>A little inspiration</h2>
+          <span>Color, texture, and light in one place.</span>
+        </article>
+        <article class="destination" id="about">
+          <p>03 / About</p>
+          <h2>Designed to feel natural</h2>
+          <span>Thoughtful details, with room to breathe.</span>
+        </article>
+        <article class="destination" id="get-started">
+          <p>04 / Get started</p>
+          <h2>Your turn to create</h2>
+          <span>Use this starting point for your own menu.</span>
+        </article>
+      </section>
+
+      <footer class="hint">Move around. Let the light do its thing.</footer>
+    </div>
+
+    <script>
+      const menuToggle = document.querySelector(".menu-toggle");
+      const menuLinks = document.querySelector("#nav-links");
+
+      menuToggle.addEventListener("click", () => {
+        const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+        menuToggle.setAttribute("aria-expanded", String(!isOpen));
+        menuToggle.setAttribute(
+          "aria-label",
+          isOpen ? "Open navigation menu" : "Close navigation menu",
+        );
+        menuLinks.dataset.open = String(!isOpen);
+      });
+
+      menuLinks.addEventListener("click", (event) => {
+        if (event.target.closest("a")) {
+          menuToggle.setAttribute("aria-expanded", "false");
+          menuToggle.setAttribute("aria-label", "Open navigation menu");
+          menuLinks.dataset.open = "false";
+        }
+      });
+    </script>
+  </body>
+</html>
