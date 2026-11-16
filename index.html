@@ -164,81 +164,31 @@
         color: #fff;
       }
 
-      .menu-toggle {
-        display: none;
-        width: 44px;
-        height: 44px;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgb(255 255 255 / 24%);
-        border-radius: 50%;
-        background: rgb(255 255 255 / 12%);
-        color: #fff;
-        cursor: pointer;
-      }
-
-      .menu-toggle svg {
-        width: 20px;
-        height: 20px;
-      }
-
       @media (max-width: 700px) {
         .page {
-          padding: 0 16px 24px;
+          padding: 0 8px 24px;
         }
 
         .glass-nav {
-          width: 56px;
-          min-height: 56px;
-          padding: 7px;
-        }
-
-        .menu-toggle {
-          display: inline-flex;
-          width: 40px;
-          height: 40px;
+          width: fit-content;
+          min-height: 0;
+          padding: 5px;
         }
 
         .nav-links {
-          position: absolute;
-          bottom: calc(100% + 10px);
-          left: 50%;
-          width: min(320px, calc(100vw - 32px));
-          transform: translateX(-50%) scale(0.06);
-          transform-origin: 50% calc(100% + 38px);
-          visibility: hidden;
-          opacity: 0;
-          pointer-events: none;
+          position: relative;
+          width: auto;
           margin: 0;
-          flex-direction: column;
-          align-items: stretch;
-          gap: 4px;
-          padding: 10px;
-          border: 1px solid rgb(255 255 255 / 25%);
-          border-radius: 24px;
-          background: rgb(49 48 78 / 66%);
-          box-shadow: 0 18px 50px rgb(15 18 42 / 22%);
-          backdrop-filter: blur(24px) saturate(155%);
-          -webkit-backdrop-filter: blur(24px) saturate(155%);
-          transition:
-            transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1),
-            opacity 240ms ease,
-            visibility 0s linear 360ms;
-        }
-
-        .nav-links[data-open="true"] {
-          transform: translateX(-50%) scale(1);
-          visibility: visible;
-          opacity: 1;
-          pointer-events: auto;
-          transition:
-            transform 360ms cubic-bezier(0.2, 0.8, 0.2, 1),
-            opacity 240ms ease,
-            visibility 0s;
+          flex-direction: row;
+          align-items: center;
+          gap: 1px;
         }
 
         .nav-links a {
-          min-height: 46px;
+          min-height: 38px;
+          padding: 0 clamp(7px, 2.4vw, 14px);
+          font-size: clamp(10px, 3.2vw, 13px);
+          white-space: nowrap;
         }
       }
 
@@ -256,24 +206,7 @@
     <div class="page">
       <header>
         <nav class="glass-nav" id="menu" aria-label="Main navigation">
-          <button
-            class="menu-toggle"
-            type="button"
-            aria-label="Open navigation menu"
-            aria-controls="nav-links"
-            aria-expanded="false"
-          >
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M4 7h16M4 12h16M4 17h16"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-width="1.7"
-              />
-            </svg>
-          </button>
-
-          <ul class="nav-links" id="nav-links" data-open="false">
+          <ul class="nav-links" id="nav-links">
             <li><a href="#menu" aria-current="page">Home</a></li>
             <li><a href="#menu">Discover</a></li>
             <li><a href="#menu">Gallery</a></li>
@@ -284,7 +217,6 @@
     </div>
 
     <script>
-      const menuToggle = document.querySelector(".menu-toggle");
       const menuLinks = document.querySelector("#nav-links");
 
       const moveIndicator = () => {
@@ -305,17 +237,6 @@
         menuLinks.style.setProperty("--indicator-height", `${linkRect.height}px`);
       };
 
-      menuToggle.addEventListener("click", () => {
-        const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
-        menuToggle.setAttribute("aria-expanded", String(!isOpen));
-        menuToggle.setAttribute(
-          "aria-label",
-          isOpen ? "Open navigation menu" : "Close navigation menu",
-        );
-        menuLinks.dataset.open = String(!isOpen);
-        if (!isOpen) requestAnimationFrame(moveIndicator);
-      });
-
       menuLinks.addEventListener("click", (event) => {
         const clickedLink = event.target.closest("a");
         if (!clickedLink) return;
@@ -325,10 +246,6 @@
           ?.removeAttribute("aria-current");
         clickedLink.setAttribute("aria-current", "page");
         moveIndicator();
-
-        menuToggle.setAttribute("aria-expanded", "false");
-        menuToggle.setAttribute("aria-label", "Open navigation menu");
-        menuLinks.dataset.open = "false";
       });
 
       window.addEventListener("resize", () => {
