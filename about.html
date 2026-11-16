@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="درباره سازندهٔ جدول تناوبی عناصر" />
+    <title>درباره | جدول تناوبی</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          Vazirmatn, Tahoma, Arial, sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        color: #fff;
+        background:
+          radial-gradient(ellipse at 18% 24%, #ffb38b 0, transparent 30%),
+          radial-gradient(ellipse at 82% 18%, #8a83ff 0, transparent 34%),
+          radial-gradient(ellipse at 70% 82%, #ee78b5 0, transparent 35%),
+          linear-gradient(135deg, #24284d 0%, #55547d 48%, #2f385c 100%);
+      }
+
+      body::before,
+      body::after {
+        position: fixed;
+        z-index: -1;
+        width: 52vw;
+        height: 52vw;
+        border: 1px solid rgb(255 255 255 / 13%);
+        border-radius: 46% 54% 60% 40% / 43% 38% 62% 57%;
+        content: "";
+        filter: blur(1px);
+        pointer-events: none;
+      }
+
+      body::before {
+        top: 28%;
+        left: -12%;
+        transform: rotate(28deg);
+      }
+
+      body::after {
+        right: -17%;
+        bottom: -34%;
+        width: 68vw;
+        height: 68vw;
+        transform: rotate(-24deg);
+      }
+
+      .about-page {
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
+        padding: 32px 16px 112px;
+      }
+
+      .about-card {
+        width: min(100%, 620px);
+        padding: clamp(26px, 6vw, 52px);
+        border: 1px solid rgb(255 255 255 / 34%);
+        border-radius: 28px;
+        background:
+          linear-gradient(125deg, rgb(255 255 255 / 17%), transparent 48%),
+          rgb(255 255 255 / 9%);
+        box-shadow:
+          0 0 0 1px rgb(255 255 255 / 12%),
+          0 24px 70px rgb(15 18 42 / 28%),
+          inset 0 1px 2px rgb(255 255 255 / 35%);
+        backdrop-filter: blur(30px) saturate(180%);
+        -webkit-backdrop-filter: blur(30px) saturate(180%);
+      }
+
+      .about-card h1 {
+        margin: 0 0 28px;
+        font-size: clamp(28px, 6vw, 42px);
+        font-weight: 650;
+        letter-spacing: -0.04em;
+      }
+
+      .about-card p {
+        margin: 14px 0 0;
+        color: rgb(255 255 255 / 88%);
+        font-size: clamp(16px, 3vw, 20px);
+        line-height: 1.9;
+      }
+
+      .about-card strong {
+        color: #fff;
+        font-weight: 650;
+      }
+
+      header {
+        position: fixed;
+        z-index: 5;
+        bottom: 24px;
+        left: 50%;
+        max-width: calc(100vw - 16px);
+        transform: translateX(-50%);
+      }
+
+      .glass-nav {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        width: fit-content;
+        max-width: 100%;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 8px;
+        border: 1px solid rgb(255 255 255 / 68%);
+        border-radius: 999px;
+        background:
+          linear-gradient(118deg, rgb(255 255 255 / 28%), transparent 36%),
+          linear-gradient(300deg, rgb(204 220 255 / 24%), transparent 52%),
+          rgb(255 255 255 / 12%);
+        box-shadow:
+          0 0 0 1px rgb(255 255 255 / 22%),
+          0 0 24px rgb(225 232 255 / 25%),
+          0 22px 60px rgb(15 18 42 / 30%),
+          inset 0 2px 2px rgb(255 255 255 / 58%),
+          inset 0 -2px 4px rgb(255 255 255 / 17%);
+        backdrop-filter: blur(38px) saturate(220%);
+        -webkit-backdrop-filter: blur(38px) saturate(220%);
+      }
+
+      .glass-nav::before,
+      .glass-nav::after {
+        position: absolute;
+        z-index: 0;
+        border-radius: inherit;
+        content: "";
+        pointer-events: none;
+      }
+
+      .glass-nav::before {
+        inset: 0;
+        border: 1px solid rgb(255 255 255 / 30%);
+        background:
+          linear-gradient(112deg, rgb(255 255 255 / 28%), transparent 30% 68%, rgb(221 229 255 / 14%)),
+          linear-gradient(180deg, rgb(255 255 255 / 15%), transparent 58%);
+        box-shadow:
+          inset 0 1px 2px rgb(255 255 255 / 48%),
+          inset 0 -1px 2px rgb(255 255 255 / 12%);
+      }
+
+      .glass-nav::after {
+        top: 2px;
+        right: 7%;
+        left: 7%;
+        height: 42%;
+        background: linear-gradient(180deg, rgb(255 255 255 / 26%), transparent);
+        filter: blur(2px);
+        opacity: 0.8;
+      }
+
+      .nav-links {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .nav-links::before {
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        width: var(--indicator-width, 0px);
+        height: var(--indicator-height, 0px);
+        border: 1px solid rgb(255 255 255 / 42%);
+        border-radius: 999px;
+        background:
+          linear-gradient(145deg, rgb(255 255 255 / 28%), rgb(255 255 255 / 10%)),
+          rgb(255 255 255 / 15%);
+        box-shadow:
+          inset 0 1px 2px rgb(255 255 255 / 40%),
+          0 0 12px rgb(255 255 255 / 16%);
+        content: "";
+        pointer-events: none;
+        transform: translate(var(--indicator-x, 0px), var(--indicator-y, 0px));
+        transition:
+          transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+          width 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+          height 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .nav-links a {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        padding: 0 17px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        color: rgb(255 255 255 / 86%);
+        font-size: 13px;
+        font-weight: 520;
+        text-decoration: none;
+        text-shadow: 0 1px 8px rgb(27 30 68 / 38%);
+        transition:
+          background 180ms ease,
+          border-color 180ms ease,
+          color 180ms ease,
+          transform 180ms ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a:focus-visible {
+        border-color: rgb(255 255 255 / 28%);
+        outline: none;
+        background: rgb(255 255 255 / 13%);
+        color: #fff;
+        transform: translateY(-1px);
+      }
+
+      .nav-links a[aria-current="page"] {
+        border-color: transparent;
+        background: transparent;
+        color: #fff;
+      }
+
+      @media (max-width: 700px) {
+        .about-page {
+          padding: 24px 14px 100px;
+        }
+
+        .nav-links {
+          gap: 1px;
+        }
+
+        .nav-links a {
+          min-height: 38px;
+          padding: 0 clamp(7px, 2.4vw, 14px);
+          font-size: clamp(10px, 3.2vw, 13px);
+          white-space: nowrap;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="about-page">
+      <section class="about-card" aria-labelledby="about-title">
+        <h1 id="about-title">درباره سازنده</h1>
+        <p><strong>نام سازنده:</strong> سید محمد طاها خالقی</p>
+        <p><strong>مدرسه:</strong> حکمت</p>
+      </section>
+    </main>
+
+    <header>
+      <nav class="glass-nav" aria-label="Main navigation">
+        <ul class="nav-links" id="nav-links">
+          <li><a href="index.html#home">Home</a></li>
+          <li><a href="index.html#menu">Discover</a></li>
+          <li><a href="index.html#menu">Gallery</a></li>
+          <li><a href="about.html" aria-current="page">About</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <script>
+      const menuLinks = document.querySelector("#nav-links");
+      const activeLink = menuLinks.querySelector('a[aria-current="page"]');
+      const linkRect = activeLink.getBoundingClientRect();
+      const listRect = menuLinks.getBoundingClientRect();
+      menuLinks.style.setProperty(
+        "--indicator-x",
+        `${linkRect.left - listRect.left - menuLinks.clientLeft}px`,
+      );
+      menuLinks.style.setProperty(
+        "--indicator-y",
+        `${linkRect.top - listRect.top - menuLinks.clientTop}px`,
+      );
+      menuLinks.style.setProperty("--indicator-width", `${linkRect.width}px`);
+      menuLinks.style.setProperty("--indicator-height", `${linkRect.height}px`);
+    </script>
+  </body>
+</html>
