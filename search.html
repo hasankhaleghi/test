@@ -228,6 +228,119 @@
         font-size: 14px;
       }
 
+      .element-details {
+        grid-column: 1 / -1;
+        min-width: 0;
+        padding: 18px;
+        border: 1px solid rgb(255 255 255 / 22%);
+        border-radius: 18px;
+        background: rgb(17 20 39 / 26%);
+      }
+
+      .element-details h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+      }
+
+      .particle-counts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .particle-count {
+        display: grid;
+        gap: 5px;
+        padding: 12px 8px;
+        border: 1px solid rgb(255 255 255 / 16%);
+        border-radius: 12px;
+        background: rgb(255 255 255 / 6%);
+        text-align: center;
+      }
+
+      .particle-count strong {
+        font-size: 18px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .particle-count span {
+        color: rgb(255 255 255 / 72%);
+        font-size: 11px;
+      }
+
+      .isotope-summary {
+        margin: 14px 0 8px;
+        color: rgb(255 255 255 / 78%);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .search-isotopes {
+        display: grid;
+        max-height: 300px;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+        gap: 7px;
+        overflow-y: auto;
+        padding: 2px;
+      }
+
+      .search-isotope {
+        display: grid;
+        min-width: 0;
+        gap: 6px;
+        padding: 10px 12px;
+        border: 1px solid rgb(255 255 255 / 18%);
+        border-radius: 12px;
+        background: rgb(255 255 255 / 6%);
+        color: #fff;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .search-isotope:hover,
+      .search-isotope:focus-visible,
+      .search-isotope[aria-pressed="true"] {
+        border-color: rgb(255 255 255 / 64%);
+        outline: none;
+        background: rgb(255 255 255 / 14%);
+      }
+
+      .search-isotope-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .search-isotope-status {
+        color: #b9f4ce;
+        font-size: 10px;
+      }
+
+      .search-isotope-status.radioactive {
+        color: #ffd0c4;
+      }
+
+      .search-isotope-info {
+        color: rgb(255 255 255 / 74%);
+        font-size: 11px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+
+      .isotope-source {
+        margin: 12px 0 0;
+        color: rgb(255 255 255 / 64%);
+        font-size: 10px;
+      }
+
+      .isotope-source a {
+        color: #fff;
+      }
+
       .element-image-frame {
         display: grid;
         min-height: 220px;
@@ -416,6 +529,11 @@
           min-height: 180px;
         }
 
+        .element-details {
+          grid-column: 1;
+          padding: 14px;
+        }
+
         .nav-links {
           gap: 1px;
         }
@@ -485,6 +603,33 @@
             </div>
             <p class="image-credit" id="image-credit"></p>
           </div>
+          <section class="element-details" aria-labelledby="details-title">
+            <h3 id="details-title">Element details</h3>
+            <div class="particle-counts" aria-label="Particle counts">
+              <div class="particle-count">
+                <strong id="detail-protons">—</strong>
+                <span>Protons</span>
+              </div>
+              <div class="particle-count">
+                <strong id="detail-neutrons">—</strong>
+                <span>Neutrons</span>
+              </div>
+              <div class="particle-count">
+                <strong id="detail-electrons">—</strong>
+                <span>Electrons</span>
+              </div>
+            </div>
+            <p class="isotope-summary" id="isotope-summary"></p>
+            <div
+              class="search-isotopes"
+              id="search-isotopes"
+              aria-label="Isotopes"
+            ></div>
+            <p class="isotope-source">
+              Isotope data:
+              <a href="https://github.com/lmmentel/mendeleev-data/tree/v1.2.0">Mendeleev Data v1.2.0</a>
+            </p>
+          </section>
         </section>
       </section>
     </main>
@@ -500,6 +645,7 @@
       </nav>
     </header>
 
+    <script src="data/isotopes.js"></script>
     <script>
       const elements = `H|Hydrogen
 He|Helium
@@ -634,7 +780,99 @@ Og|Oganesson`
       const elementImage = document.querySelector("#element-image");
       const imageMessage = document.querySelector("#image-message");
       const imageCredit = document.querySelector("#image-credit");
+      const isotopeList = document.querySelector("#search-isotopes");
+      const isotopeSummary = document.querySelector("#isotope-summary");
+      const isotopesByElement = new Map();
+      const isotopeDataset = window.isotopeDataset;
+      for (const isotope of isotopeDataset?.isotopes ?? []) {
+        const elementIsotopes = isotopesByElement.get(isotope.z) ?? [];
+        elementIsotopes.push(isotope);
+        isotopesByElement.set(isotope.z, elementIsotopes);
+      }
+      isotopesByElement.forEach((elementIsotopes) => {
+        elementIsotopes.sort((first, second) => first.a - second.a);
+      });
       let activeImageRequest;
+
+      const selectIsotope = (element, isotope, button) => {
+        isotopeList
+          .querySelector('[aria-pressed="true"]')
+          ?.setAttribute("aria-pressed", "false");
+        button.setAttribute("aria-pressed", "true");
+        document.querySelector("#detail-neutrons").textContent =
+          isotope.a - isotope.z;
+        const elementIsotopes =
+          isotopesByElement.get(element.atomicNumber) ?? [];
+        const stableCount = elementIsotopes.filter(
+          (item) => !item.radioactive,
+        ).length;
+        isotopeSummary.textContent =
+          `${elementIsotopes.length} isotope records · ${stableCount} stable · ${elementIsotopes.length - stableCount} radioactive · Selected: ${element.symbol}-${isotope.a} (${isotope.radioactive ? "Radioactive" : "Stable"})`;
+      };
+
+      const renderIsotopes = (element) => {
+        isotopeList.replaceChildren();
+        const elementIsotopes = isotopesByElement.get(element.atomicNumber) ?? [];
+        const stableCount = elementIsotopes.filter(
+          (isotope) => !isotope.radioactive,
+        ).length;
+        const radioactiveCount = elementIsotopes.length - stableCount;
+        isotopeSummary.textContent = isotopeDataset
+          ? `${elementIsotopes.length} isotope records · ${stableCount} stable · ${radioactiveCount} radioactive`
+          : "Isotope data is not available. Upload the data folder alongside this page.";
+
+        elementIsotopes.forEach((isotope) => {
+          const button = document.createElement("button");
+          const neutronCount = isotope.a - isotope.z;
+          const status = isotope.radioactive ? "Radioactive" : "Stable";
+          const halfLife = isotope.halfLife
+            ? `Half-life: ${isotope.halfLife}${isotope.halfLifeUnit ? ` ${isotope.halfLifeUnit}` : ""}`
+            : isotope.radioactive
+              ? "Half-life not reported"
+              : "";
+          const abundance = isotope.abundance
+            ? `Natural abundance: ${isotope.abundance}%`
+            : "";
+          button.className = "search-isotope";
+          button.type = "button";
+          button.setAttribute("aria-pressed", "false");
+          button.setAttribute(
+            "aria-label",
+            `${element.name}-${isotope.a}, ${status}, ${element.atomicNumber} protons, ${neutronCount} neutrons${halfLife ? `, ${halfLife}` : ""}${abundance ? `, ${abundance}` : ""}`,
+          );
+          button.innerHTML =
+            `<span class="search-isotope-heading">` +
+            `<strong>${element.symbol}-${isotope.a}</strong>` +
+            `<span class="search-isotope-status${isotope.radioactive ? " radioactive" : ""}">${status}</span>` +
+            `</span>` +
+            `<span class="search-isotope-info">${element.atomicNumber} protons · ${neutronCount} neutrons</span>` +
+            [abundance, halfLife]
+              .filter(Boolean)
+              .map((detail) => `<span class="search-isotope-info">${detail}</span>`)
+              .join("");
+          button.addEventListener("click", () =>
+            selectIsotope(element, isotope, button),
+          );
+          isotopeList.append(button);
+        });
+
+        const initialIsotope =
+          elementIsotopes.find(
+            (isotope) => !isotope.radioactive && isotope.abundance,
+          ) ??
+          elementIsotopes.find((isotope) => !isotope.radioactive) ??
+          elementIsotopes[0];
+        if (initialIsotope) {
+          const initialButton = [...isotopeList.children].find((button) =>
+            button.querySelector("strong").textContent.endsWith(
+              `-${initialIsotope.a}`,
+            ),
+          );
+          selectIsotope(element, initialIsotope, initialButton);
+        } else {
+          document.querySelector("#detail-neutrons").textContent = "—";
+        }
+      };
 
       const showElement = async (element, button) => {
         searchResults
@@ -646,6 +884,11 @@ Og|Oganesson`
         document.querySelector("#result-name").textContent = element.name;
         document.querySelector("#result-number").textContent =
           `Atomic number ${element.atomicNumber}`;
+        document.querySelector("#detail-protons").textContent =
+          element.atomicNumber;
+        document.querySelector("#detail-electrons").textContent =
+          element.atomicNumber;
+        renderIsotopes(element);
 
         activeImageRequest?.abort();
         const imageRequest = new AbortController();
